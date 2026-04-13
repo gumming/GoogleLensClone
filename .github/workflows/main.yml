@@ -1,0 +1,33 @@
+name: Generate Repository Summary
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Combine files into one
+        run: |
+          # إنشاء ملف فارغ
+          echo "Repository Summary - $(date)" > sum.txt
+          echo "======================" >> sum.txt
+          
+          # البحث عن الملفات (يمكنك إضافة أو إزالة الامتدادات حسب حاجتك)
+          find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.md" -o -name "*.txt" \) \
+          ! -path "*/.*" ! -name "sum.txt" | while read file; do
+            echo -e "\n\n--- File: $file ---\n" >> sum.txt
+            cat "$file" >> sum.txt
+          done
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-summary
+          path: sum.txt
