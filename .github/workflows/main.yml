@@ -1,4 +1,4 @@
-name: Generate Repository Summary
+Name: Generate Full Repository Summary
 
 on:
   workflow_dispatch:
@@ -13,21 +13,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Combine files into one
+      - name: Combine ALL files into one
         run: |
-          # إنشاء ملف فارغ
-          echo "Repository Summary - $(date)" > sum.txt
-          echo "======================" >> sum.txt
+          # إنشاء ملف التلخيص
+          echo "Full Repository Summary - $(date)" > full_repo_summary.txt
+          echo "======================================" >> full_repo_summary.txt
           
-          # البحث عن الملفات (يمكنك إضافة أو إزالة الامتدادات حسب حاجتك)
-          find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.md" -o -name "*.txt" \) \
-          ! -path "*/.*" ! -name "sum.txt" | while read file; do
-            echo -e "\n\n--- File: $file ---\n" >> sum.txt
-            cat "$file" >> sum.txt
+          # البحث عن كافة الملفات واستثاء ملف التلخيص نفسه فقط
+          find . -type f ! -name "full_repo_summary.txt" | while read file; do
+            echo -e "\n\n--- File: $file ---\n" >> full_repo_summary.txt
+            cat "$file" >> full_repo_summary.txt
           done
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: repo-summary
-          path: sum.txt
+          name: full-repo-summary
+          path: full_repo_summary.txt
