@@ -1,4 +1,4 @@
-Name: Generate Full Repository Summary
+name: Generate Full Repository Summary
 
 on:
   workflow_dispatch:
