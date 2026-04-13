@@ -1,4 +1,4 @@
-name: Generate Full Repository Summary
+Name: Generate Clean Android Summary
 
 on:
   workflow_dispatch:
@@ -13,20 +13,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Combine ALL files into one
+      - name: Combine readable files only
         run: |
           # إنشاء ملف التلخيص
-          echo "Full Repository Summary - $(date)" > full_repo_summary.txt
-          echo "======================================" >> full_repo_summary.txt
+          echo "Android Clean Repository Summary - $(date)" > clean_repo_summary.txt
+          echo "==========================================" >> clean_repo_summary.txt
           
-          # البحث عن كافة الملفات واستثاء ملف التلخيص نفسه فقط
-          find . -type f ! -name "full_repo_summary.txt" | while read file; do
-            echo -e "\n\n--- File: $file ---\n" >> full_repo_summary.txt
-            cat "$file" >> full_repo_summary.txt
+          # البحث عن الملفات واستثناء الثنائيات (Binary) والملفات غير المرغوبة
+          # نستخدم grep -v لاستبعاد الامتدادات المشفرة والثنائية
+          find . -type f \
+          ! -name "clean_repo_summary.txt" \
+          ! -name "*.png" \
+          ! -name "*.jpg" \
+          ! -name "*.jpeg" \
+          ! -name "*.gif" \
+          ! -name "*.ico" \
+          ! -name "*.jar" \
+          ! -name "*.keystore" \
+          ! -path "*/.git/*" | while read file; do
+            
+            # التأكد من أن الملف نصي (Text file) لتجنب قراءة الملفات الثنائية المتبقية
+            if file "$file" | grep -q text; then
+              echo -e "\n\n--- File: $file ---\n" >> clean_repo_summary.txt
+              cat "$file" >> clean_repo_summary.txt
+            fi
           done
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: full-repo-summary
-          path: full_repo_summary.txt
+          name: clean-android-summary
+          path: clean_repo_summary.txt
