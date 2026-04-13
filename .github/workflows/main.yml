@@ -1,4 +1,4 @@
-Name: Generate Clean Android Summary
+name: Generate Clean Android Summary
 
 on:
   workflow_dispatch:
